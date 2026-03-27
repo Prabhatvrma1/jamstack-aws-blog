@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ JamBlog – Jamstack Site with AWS
 
-## Getting Started
+A modern, fast, and scalable **Jamstack blog** built with **Next.js**, **Contentful CMS**, and deployed on **AWS Amplify** with **S3** and **CloudFront**.
 
-First, run the development server:
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
+![AWS](https://img.shields.io/badge/AWS-Amplify-orange?logo=amazonaws)
+![Contentful](https://img.shields.io/badge/CMS-Contentful-blue?logo=contentful)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🏗️ Architecture
+
+```
+Frontend (Next.js)
+       ↓
+AWS Amplify (CI/CD + Hosting + CDN)
+       ↓
+Headless CMS (Contentful)
+       ↓
+AWS S3 (Static Assets)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Quick Start
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Prerequisites
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Node.js 18+
+- npm
+- (Optional) Contentful account for CMS data
 
-## Learn More
+### Install & Run
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# Install dependencies
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Run development server
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploy on Vercel
+> **Note:** Without Contentful credentials, the app runs with built-in demo data.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Connect Contentful CMS
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create a free account at [contentful.com](https://www.contentful.com/)
+2. Create a new **Space**
+3. Create a **Content Model** called `blogPost` with these fields:
+   | Field | Type |
+   |-------|------|
+   | `title` | Short Text |
+   | `slug` | Short Text (unique) |
+   | `description` | Short Text |
+   | `content` | Rich Text |
+   | `date` | Date |
+   | `author` | Short Text |
+   | `tags` | Short Text (list) |
+   | `coverImage` | Media (optional) |
+4. Add some sample blog posts
+5. Go to **Settings → API Keys** and copy your **Space ID** and **Content Delivery API access token**
+6. Update `.env.local`:
+
+```env
+CONTENTFUL_SPACE_ID=your_space_id
+CONTENTFUL_ACCESS_TOKEN=your_access_token
+```
+
+---
+
+## ☁️ Deploy to AWS Amplify
+
+### Step 1: Push to GitHub
+
+```bash
+git init
+git add .
+git commit -m "initial commit: Jamstack blog"
+git branch -M main
+git remote add origin <your-github-repo-url>
+git push -u origin main
+```
+
+### Step 2: Connect to AWS Amplify
+
+1. Sign in to the **AWS Management Console**
+2. Navigate to **AWS Amplify**
+3. Click **New App → Host Web App**
+4. Select **GitHub** and authorize access
+5. Choose your repo and branch (`main`)
+6. Amplify auto-detects the `amplify.yml` build settings
+7. Add **Environment Variables** in Amplify Console:
+   - `CONTENTFUL_SPACE_ID`
+   - `CONTENTFUL_ACCESS_TOKEN`
+8. Click **Save and Deploy**
+
+✅ Done! Your site is live with CI/CD — every push auto-deploys.
+
+### Step 3: (Optional) S3 Static Hosting
+
+If you want to use S3 as an alternative:
+
+1. Run `npm run build` locally
+2. Open **AWS S3 Console** → Create a new bucket
+3. Enable **Static Website Hosting** in bucket Properties
+4. Upload the contents of the `out/` directory (add `output: 'export'` to `next.config.ts` first)
+5. Set **Bucket Policy** to allow public read access
+
+### Step 4: (Optional) CloudFront CDN
+
+1. Go to **AWS CloudFront**
+2. Create a new distribution pointing to your S3 bucket or Amplify URL
+3. This gives you global CDN caching for fast load times
+
+### Step 5: (Optional) Custom Domain & SSL
+
+1. Register or transfer domain in **AWS Route 53**
+2. Use **AWS Certificate Manager (ACM)** to provision a free SSL certificate
+3. Attach the certificate and domain to your Amplify app or CloudFront distribution
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── blog/
+│   │   ├── [slug]/
+│   │   │   └── page.tsx      # Dynamic blog post page
+│   │   └── page.tsx           # Blog listing page
+│   ├── components/
+│   │   ├── BlogCard.tsx       # Blog post card component
+│   │   ├── Footer.tsx         # Site footer
+│   │   └── Header.tsx         # Navigation header
+│   ├── globals.css            # Design system & animations
+│   ├── layout.tsx             # Root layout with Header/Footer
+│   └── page.tsx               # Homepage
+├── lib/
+│   └── contentful.ts          # Contentful CMS client & helpers
+├── .env.local                 # CMS credentials (not committed)
+└── amplify.yml                # AWS Amplify build config
+```
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **Next.js 16** | React framework with App Router |
+| **TypeScript** | Type safety |
+| **Tailwind CSS 4** | Utility-first styling |
+| **Contentful** | Headless CMS |
+| **AWS Amplify** | CI/CD & Hosting |
+| **AWS S3** | Static asset storage |
+| **AWS CloudFront** | CDN for global distribution |
+| **AWS Route 53** | DNS management |
+| **AWS ACM** | SSL/TLS certificates |
+
+## 📄 License
+
+This project is built for educational purposes.
