@@ -9,6 +9,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 60; // Refresh data every 60 seconds
+
 export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((post) => ({ slug: post.slug }));
@@ -64,6 +66,12 @@ export default async function BlogPostPage({ params }: PageProps) {
       <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6 animate-fade-in-up">
         {post.title}
       </h1>
+
+      {post.description && (
+        <p className="text-xl text-muted mb-8 leading-relaxed animate-fade-in-up delay-75">
+          {post.description}
+        </p>
+      )}
 
       {/* Meta */}
       <div className="flex items-center gap-4 text-sm text-muted mb-10 pb-8 border-b border-surface-border animate-fade-in-up delay-100">

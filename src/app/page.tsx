@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getAllPosts } from "@/lib/contentful";
+
+export const revalidate = 60;
 import BlogCard from "./components/BlogCard";
 
 export default async function Home() {

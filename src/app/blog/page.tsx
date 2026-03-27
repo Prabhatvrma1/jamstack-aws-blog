@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { getAllPosts } from "@/lib/contentful";
+
+export const revalidate = 60;
 import BlogCard from "../components/BlogCard";
 
 export const metadata: Metadata = {
