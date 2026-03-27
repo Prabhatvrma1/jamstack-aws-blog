@@ -187,7 +187,7 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 
   try {
     const res = await client.getEntries({
-      content_type: "blogPost",
+      content_type: "blogpost",
       order: ["-sys.createdAt"],
     });
     return res.items.map((item) => parsePost(item));
@@ -211,7 +211,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 
   try {
     const res = await client.getEntries({
-      content_type: "blogPost",
+      content_type: "blogpost",
       "fields.slug": slug,
       limit: 1,
     } as Parameters<typeof client.getEntries>[0]);
